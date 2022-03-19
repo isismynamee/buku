@@ -6,8 +6,7 @@ const jwt = require('jsonwebtoken')
 exports.register = async (req, res)=>{
     const schemajoi = Joi.object({
         fullname: Joi.string().min(2).required(),
-        email: Joi.string().email().min(4).required()  ,
-        role: Joi.string().min(4).required(),
+        email: Joi.string().email().min(4).required(),
         password: Joi.string().min(6).required()
     })
 
@@ -26,7 +25,7 @@ exports.register = async (req, res)=>{
         const newUserR = await user.create({
             fullname: req.body.fullname,
             email: req.body.email,
-            role: req.body.role,
+            role: "user",
             password: hashedPass
         })
 
@@ -100,3 +99,41 @@ exports.login = async (req, res) => {
       });
     }
   };
+  exports.checkAuth = async (req, res) => {
+      try {
+        const id = req.user.id;
+    
+        const dataUser = await user.findOne({
+          where: {
+            id, role: "admin"
+          },
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "password"],
+          },
+        });
+    
+        if (!dataUser) {
+          return res.status(404).send({
+            status: "failed",
+          });
+        }
+    
+        res.send({
+          status: "success...",
+          data: {
+            user: {
+              id: dataUser.id,
+              fullname: dataUser.fullname,
+              email: dataUser.email,
+              role: dataUser.role,
+            },
+          },
+        });
+      } catch (error) {
+        console.log(error);
+        res.status({
+          status: "failed",
+          message: "Server Error",
+        });
+      }
+    };

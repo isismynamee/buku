@@ -3,7 +3,8 @@ const {book} = require('../../models')
 exports.postbook = async (req, res)=>{
     try {        
 
-        const {data} = req.body
+        const d = new Date()
+        const {data} = req.body;
 
         let addbook = await book.create({
             ...data,
@@ -12,7 +13,7 @@ exports.postbook = async (req, res)=>{
             title: req.body.title,
             describe: req.body.describe,
             bookfile: req.body.bookfile,
-            publicationdate: req.body.publicationdate,
+            publicationdate: d,
             language: req.body.language,
             isbn: req.body.isbn
         })
@@ -90,7 +91,7 @@ exports.updatebook = async (req, res)=>{
 
         await book.update(req.body,{
             where: {
-                id
+                id,
             },
         })
         const updatedbook = await book.findOne({ 

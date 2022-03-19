@@ -8,6 +8,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      status: {
+        type: Sequelize.STRING
+      },
       idUser: {
         type: Sequelize.INTEGER,
         references: {
@@ -21,7 +24,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       remainingactive: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       userstatus: {
         type: Sequelize.STRING

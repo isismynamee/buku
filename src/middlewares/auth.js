@@ -12,13 +12,20 @@ exports.auth = (req, res, next) => {
 
     try {
               
-        const verif = jwt.verify(token, SECRET_KEY)
-        
+        const verif = jwt.verify(token, process.env.SECRET_KEY)
+        // const done=()=>{
+        //     if(!verif({
+        //         where:{
+        //             role: "admin"
+        //         }})
+        //     );
+        // }
+
         req.user = verif
         next()
     } catch (error) {
         res.status(404).send({
-            message: (error.message)
+            message: console.log(error.message)
         })
     }
 }

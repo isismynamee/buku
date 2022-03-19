@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       genrebook.hasMany(models.listbook, {
-        as: "list",
+        as: "genre",
         foreignKey: {
           name: "idGenre",
         },

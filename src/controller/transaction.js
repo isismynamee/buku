@@ -1,14 +1,11 @@
-const {transaction, user} = require('../../models')
+const cron = require('node-cron');
+const {transaction, user} = require('../../models');
 
 exports.posttransaction = async (req, res)=>{
-    try {        
-
+    try {
         const {datatransaction} = req.body
 
         let addtransaction = await transaction.create(
-            // where={
-            //     id: req.params.id
-            // },
             {
             ...datatransaction,
             image: req.file.filename,
@@ -16,22 +13,15 @@ exports.posttransaction = async (req, res)=>{
             remainingactive: req.body.remainingactive,
             userstatus: req.body.userstatus,
             paymentstatus: req.body.paymentstatus,
-            // include: [{
-            //     model: user,
-            //     as: 'user',
-            //     attributes: {
-            //         exclude: ['createdAt', 'updatedAt', 'password', 'image', 'role', 'address', 'gender', 'phone']
-            //     }
-            // }]
         })
-
+        
         addtransaction = JSON.parse(JSON.stringify(addtransaction))
-
+        
         addtransaction = {
             ...addtransaction,
             image: process.env.FILE_PATH + addtransaction.image
         }
-        console.log(datatransaction)
+        
         res.send({
             status: 'Success',
             data: addtransaction
@@ -55,7 +45,7 @@ exports.transactions = async (req, res)=>{
                 model: user,
                 as: 'user',
                 attributes: {
-                    exclude: ['createdAt', 'updatedAt', 'password', 'image', 'role', 'address', 'gender', 'phone']
+                    exclude: ['createdAt', 'updatedAt', 'id', 'password', 'image', 'role', 'address', 'gender', 'phone']
                 }
             }]
         })
@@ -110,31 +100,73 @@ exports.updatetransaction = async (req, res)=>{
     try {
         const {id} = req.params;
 
-        await transaction.update(req.body,{
-            where: {
-                id
-            },
-        })
+        if(req.body.paymentstatus == 'Approve'){
+
+        await transaction.update({
+                userstatus: 'Active',
+                remainingactive: 30,
+                paymentstatus: req.body.paymentstatus
+             },
+             {
+                where: {
+                     id
+                }
+             })
+        }else{
+
+            await transaction.update({
+                    userstatus: 'Active',
+                    paymentstatus: req.body.paymentstatus
+                 },
+                 {
+                    where: {
+                         id
+                    }
+                 })
+        }
+
+        if(req.body.paymentstatus == 'Cancel'){
+
+            await transaction.update({
+                    userstatus: 'Not Active',
+                    remainingactive: 0,
+                    paymentstatus: req.body.paymentstatus
+                 },
+                 {
+                    where: {
+                         id
+                    }
+                 })
+        }
+
         const updatedtransaction = await transaction.findOne({ 
             where:{
                 id
             },
             attributes: {
                 exclude: ['id', 'createdAt', 'updatedAt']
+            },
+            include: {
+                model: user,
+                as: 'user',
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt', 'role', 'id', 'password', 'email', 'address', 'phone', 'image', 'status', 'gender']
+                }
             }
         })
 
         res.send({
             status: 'Success',
             data: {
-                updatedtransaction
+                updatedtransaction,
+                // paymentstatus: calendar
             },
             message: "Update transaction Success"
         })
     } catch (error) {
         res.send({
             status: 'Failed',
-            message: console.log(error.message)
+            message: (error)
         })
     }
 }

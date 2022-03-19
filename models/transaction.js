@@ -21,10 +21,20 @@ module.exports = (sequelize, DataTypes) => {
   }
   transaction.init({
     idUser: DataTypes.INTEGER,
+    status: DataTypes.STRING,
     image: DataTypes.STRING,
-    remainingactive: DataTypes.STRING,
-    userstatus: DataTypes.STRING,
-    paymentstatus: DataTypes.STRING
+    remainingactive: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    userstatus: {
+      type: DataTypes.STRING,
+      defaultValue: "Not Active"
+    },
+    paymentstatus: {
+      type: DataTypes.STRING,
+      defaultValue: "Nothing"
+    }
   }, {
     sequelize,
     modelName: 'transaction',

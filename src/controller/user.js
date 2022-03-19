@@ -58,7 +58,7 @@ exports.updateU = async (req, res)=>{
         await user.update(req.body,{
             where: {
                 id
-            },
+            }
         })
         const updateduser = await user.findOne({ 
             where:{
@@ -87,7 +87,7 @@ exports.deleteuser = async (req, res)=>{
     try {
         const {id} = req.params;
 
-        const deleteUser = await user.destroy({
+        await user.destroy({
             where:{
                 id
             },
